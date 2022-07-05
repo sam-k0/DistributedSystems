@@ -1,0 +1,100 @@
+version: '2'
+
+# services to build
+services:
+  # build webserver with POST entry on IP 172.20.128.2 and GET on port localhost:8080 (expose it to view it)
+  webserver:
+    build:
+      context: ./Webserver/
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.2
+    ports:
+      - "8080:8080"
+    expose: [8080]
+
+  # build RPCServer with default entry on IP 172.20.128.5
+  rpcserver:
+    build:
+      context: ./RPCServer/
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.5
+    ports:
+      - "9000:9000"
+    expose: [9000]
+    depends_on:
+      - webserver
+  
+  # build (so far just one) sensor to send files through IP 172.20.128.3
+  sensors:
+    build:
+      context: ./SocketRecv/
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.3
+
+  sensors2:
+    build:
+      context: ./SocketRecv/
+    networks:
+      - static-network
+    deploy:
+      replicas: 1
+    depends_on:
+      - webserver
+
+  # build main control unit to handle and recieve data from sensor and send to webserver through IP 172.20.128.4
+  controlunit:
+    build: 
+      context: ./SocketSender/
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.4
+    # set dependency to not build controlunit unless webserver and sensors are built
+    depends_on:
+      - webserver
+      - sensors
+      - sensors2
+      - rpcserver
+# MQTT STUFF
+  mosquitto-dc:
+    image: eclipse-mosquitto
+    volumes:
+      - ./MQTT_Broker/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - "1883:1883"
+    expose: [1883]
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.40
+  
+  # adapter, starts after mosq-dc
+  mqtt-adapter:
+    build: 
+      context: ./MQTT_Adapter/
+    networks:
+      - static-network
+    depends_on:
+      - mosquitto-dc
+      - sensors2 # wait for them to take ipaddresses
+
+  # adapter, starts after mosq-dc
+  mqtt-sensor:
+    build: 
+      context: ./MQTT_Sensor/
+    networks:
+      - static-network
+    depends_on:
+      - mosquitto-dc
+      - mqtt-adapter
+      
+
+# build the network on 172.20.*.* for the containers
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          # Note: docker-compose v3+ do not use ip_range
+          ip_range: 172.28.5.0/24

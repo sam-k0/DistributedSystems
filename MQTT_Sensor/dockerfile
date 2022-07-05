@@ -1,0 +1,9 @@
+# Use and install python version 3
+#FROM python:3
+FROM pythonmqttbase:latest
+# Copy all files to /VS and set it to the working dir
+COPY . /VS
+WORKDIR /VS/
+
+#RUN pip install paho-mqtt
+CMD ["python","-u", "mqtt-sensor.py"]

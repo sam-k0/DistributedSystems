@@ -1,0 +1,10 @@
+# Use latest gcc version to make and execute c files
+FROM gcc:latest
+
+# Copy all files to /VS and set it to the working dir
+COPY . /VS
+WORKDIR /VS/
+
+# Build executeable with name sender from main.c and execute it
+RUN gcc -o sender main.c -lm
+CMD ["./sender"]

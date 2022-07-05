@@ -1,0 +1,9 @@
+# Use and install python version 3
+FROM python:3
+
+# Copy all files to /VS and set it to the working dir
+COPY . /VS
+WORKDIR /VS/
+
+# Serve webserver in main.py
+CMD ["python", "rpcserver2.py"]

@@ -1,0 +1,12 @@
+Average round trip times are saved here. (Sensor[SocketReciever] - Mainctrl[SocketSender])
+
+Ping cooldown(usec) | Saved RTTs | Average RTT (ms) | Total RTT (ms) | Number of sensors
+----------------------------------------------------------------------------------------
+1000                ; 2000       ; 0.242            ; 484            ; 1
+100                 ; 2000       ; 0.254            ; 508            ; 1
+1                   ; 2000       ; 0.2275           ; 455            ; 1
+1                   ; 2000       ; 0.322            ; 645            ; 1
+1                   ; 5000       ; 0.278            ; 1392           ; 1
+
+# Noch mehr Sensoren gleichzeitig starten
+# Protokolle möglichst nicht ganz am Schluss abgeben

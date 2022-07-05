@@ -1,0 +1,20 @@
+while True:
+        #data, address = sock.recvfrom(4096)
+
+        #print("Received: " +str(data.decode('utf-8')))
+
+        #prep_message = data.decode('utf-8')
+        prep_message = "1283"
+
+        client.publish(topic_requests,str(prep_message)) # send to topic for request
+        
+        while(len(dataArr) == 0):
+            sus = 1 
+
+        prep_message = dataArr.pop()
+        print(prep_message)
+        sleep(1)
+        #sock.sendto(prep_message.encode('utf-8'),address)
+
+# UDP shit
+
